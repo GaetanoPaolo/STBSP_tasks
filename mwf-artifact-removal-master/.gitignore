@@ -1,0 +1,26 @@
+# exclude cache folders including only .mat files
+EEG_data_readout/
+EEG_artifact_masks/
+EEG_data_synthetic/
+
+# exclude raw data files
+*.mat
+
+# local matlab settings
+*_localsettings.m
+
+# exclude figures
+*.pdf
+*.eps
+*.fig
+
+# temporary files
+*.asv
+*.m~
+
+# latex build files
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.out
