@@ -1,0 +1,33 @@
+load('artifactData.mat')
+[chann,samp] = size(data);
+
+%% Plotting
+figure; hold on; 
+x= 1:100;
+plotted_data = data(1,x);
+plot(x,plotted_data)
+
+cur_events =  find((x(1) <=events) & (events<= x(end)));
+cur_labels = find((x(1) <=labels) & (labels<= x(end)));
+amp = zeros(1,size(cur_events,2));
+cur_events_idx = events(cur_events);
+cur_labels_idx = labels(cur_labels);
+plot(cur_events_idx,cur_events_idx - x(1),'*g')
+plot(cur_labels_idx,plotted_data(cur_labels_idx-x(1)),'*r')
+title('Stimulation artifact recodring')
+xlabel('Timesamples')
+ylabel('Amplitude')
+
+%% Computing LS filter solution
+chan = adjacent_channels{1};
+
+L = 9;
+X = double.empty();
+for j = 1:M
+    adj_data = double.empty(0,0);
+    for i = chan
+        adj_data = cat(2,adj_data,data(i,events(j)-L+1:events(j)));
+    end
+    X = cat(1,X,adj_data);
+end
+
