@@ -3,8 +3,9 @@ load('artifactData.mat')
 
 %% Plotting
 figure; hold on; 
-x= 1:100;
-plotted_data = data(1,x);
+%x= 73800:73900;
+x=1:100;
+plotted_data = data(8,x);
 plot(x,plotted_data)
 
 cur_events =  find((x(1) <=events) & (events<= x(end)));
