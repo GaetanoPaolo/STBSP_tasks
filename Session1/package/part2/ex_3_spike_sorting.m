@@ -22,7 +22,7 @@ vecTemplate = mat2stacked(template);
 
 % TODO: Visualize the calculated template using plotMultiChannel
 % visualize template
-plotMultiChannel(vecTemplate,2)
+plotMultiChannel(template,1)
 %% Template as a filter
 % TODO: complete applyMultiChannelFilter function
 %  make sure to transform the filter coefficients back to a matrix

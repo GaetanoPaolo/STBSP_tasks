@@ -16,11 +16,14 @@ eegdata_trunc = eegdata(:,1:end-1);
 w_trans = w';
 [row,col] = size(w_trans);
 w_inv = inv(w_trans);
+eeg_compl = y;
 eeg_rec = w_inv(:,1:end-37)*y(1:end-37,:);
 %Comparing original eeg with muscle artifact removal
 figure("Name","Original")
 eegplot_simple(eegdata,fs)
-figure("Name","Mod")
+figure("Name","Complete")
+eegplot_simple(eeg_compl,fs)
+figure("Name","Muscle Removal")
 eegplot_simple(eeg_rec,fs);
 
 % to remove eye blink artifacts: try removing higher CCA components that
@@ -43,7 +46,7 @@ plot(1:30*fs, n(1,1:30*fs))
 plot(1:30*fs, d(1,1:30*fs))
 hold off
 legend("raw","MWF","est artifacts")
-title(strcat("ARR: ",num2str(ARR),"SER: ",num2str(SER)))
+title(strcat("ARR: ",num2str(ARR)," SER: ",num2str(SER)))
 %save('mask.mat','mask')
 %% 1.3.1.3-4
 % The delay is automatically set to 0 in the mwf_process function, so L =
@@ -69,7 +72,8 @@ title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
 %values that are large enough (compared to the first) => not smalle than
 %0.1*largest eig
 p               = mwf_params(...
-                'rank', 'first', ...
+                'rank', 'first',    ...
+                ...
                 'rankopt',4, ...
                 'delay', 0);
 [n_d, d_d, W, SER_d, ARR_d] = mwf_process(eegdata, mask,p);
@@ -142,7 +146,7 @@ while sum(ismember(2,tot_mask)) > 0
 end
 p               = mwf_params(...
                 'rank', 'poseig', ...
-                'delay', 0);
+                'delay', 3);
 [n_d, d_d, W, SER_d, ARR_d] = mwf_process(eegdata, tot_mask,p);
 [row,col] = size(eegdata);
 
@@ -152,7 +156,7 @@ plot(1:col, eegdata(1,:))
 plot(1:col, n_d(1,:))
 plot(1:col, d_d(1,:))
 hold off
-legend("raw","MWF","est_artifacts")
+legend("Raw","MWF","Estimated artifacts")
 title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
  
 figure("Name","EEG plot totmask")

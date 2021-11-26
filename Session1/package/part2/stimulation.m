@@ -16,7 +16,7 @@ plot(x,data(4,x))
 plot(cur_events_idx,amp_events,'*g')
 plot(cur_labels_idx,amp_labels,'*r')
 hold off
-title('Stimulation artifact recodrings superimposed')
+title('Stimulation artifact recordings superimposed')
 xlabel('Timesamples')
 ylabel('Amplitude')
 legend('chan14','chan4','events','labels')
