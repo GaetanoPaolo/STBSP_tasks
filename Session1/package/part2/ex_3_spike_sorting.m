@@ -12,7 +12,6 @@ load('trainingData.mat');
 fs = 25000; % sampling frequency
 spike_window = 25; % samples spike window
 nbChannels = size(trainingData,2);
-
 %% CALCULATE TEMPLATE
 
 % calculate template
@@ -85,8 +84,13 @@ legend('recall','precision')
 
 % TODO: based on the plotted P-R curve choose a threshold
 % max_threshold =  % <your value here>;
-[~,pos] = max(SNR_precs);
+
+F1 = 2*(SNR_senss.*SNR_precs)./(SNR_senss+SNR_precs);
+%[~,pos] = max(SNR_precs);
+[~,pos] = max(F1);
 max_threshold = SNR_thrs(pos);
+disp('Template filter treshold')
+disp(max_threshold)
 % precision it the only non monotonic variable => defines optimal choice
 %% VALIDATE template filter ON TESTING DATA
 
@@ -206,9 +210,14 @@ hold off
 legend('recall','precision')
 
 % TODO: based on the plotted P-R curve choose a threshold
-[~,pos] = max(SNR_precs);
-max_threshold = SNR_thrs(pos);
 
+
+F1 = 2*(SNR_senss.*SNR_precs)./(SNR_senss+SNR_precs);
+%[~,pos] = max(SNR_precs);
+[~,pos] = max(F1);
+max_threshold = SNR_thrs(pos);
+disp('Matched filter treshold')
+disp(max_threshold)
 %% VALIDATE Matched filter ON TESTING DATA
 
 % load the testing data
@@ -314,9 +323,15 @@ end
 % TODO: plot a P-R curve using SPIR_senss and SPIR_precs
 
 figure('Name','P-R plot max SPIR filter')
+hold on
+plot(SNR_senss,SNR_precs)
 plot(SPIR_senss,SPIR_precs)
+plot(0.0305,0.0108,'*r')
+hold off
 xlabel('Recall/Sensitivity')
 ylabel('Precision')
+legend('Matched filter','max-SPIR filter','chosen treshold')
+title('PR curve for both matched and max-SPIR filters')
 
 figure('Name','PR-Treshold plot max SPIR filter')
 hold on
@@ -329,7 +344,8 @@ legend('recall','precision')
 F1 = 2*(SPIR_senss.*SPIR_precs)./(SPIR_senss+SPIR_precs);
 [~,pos] = max(F1);
 max_threshold_SPIR = SPIR_thrs(pos);
-
+disp('SPIR teshold')
+disp(max_threshold_SPIR)
 %% VALIDATE MAX-SPIR FILTER ON TESTING DATA
 
 testingMaxSPIROut = applyMultiChannelFilter(testingData, maxSPIR);
@@ -354,14 +370,16 @@ fprintf('max-SPIR: for the maximum F1-score threshold: recall: %.3f, precision: 
 [normSNR, normSPIR] = normalizeOutputs(testingMaxSNROut, testingMaxSPIROut, testingOutLabels, spike_window);
 
 % plot normalized filter outputs on testing data
+[~,len] = size(testingOutLabels);
+labels = zeros(1,len);
 figure; hold on;
-plot(normSPIR, 'DisplayName', 'normalized max-SPIR');
-plot(normSNR, 'DisplayName', 'normalized Matched filter');
-plot(testingOutLabels, normSPIR(testingOutLabels), 'g*', 'DisplayName', 'Testing labels');
+plot(normSNR);
+plot(normSPIR);
+plot(testingOutLabels, labels, 'g*');
 title('Filter outputs on testing data')
 xlabel('Discrete time [samples]');
 ylabel('Output power [arb. unit]')
-legend('show');
+legend('normalized Matched filter','normalized max-SPIR', 'Testing labels');
 % The matched filter often undershoots labeled testing points while the
 % SPIR often reaches them => due to the specific modelling of the peak
 % interferers in the cost function for SPIR, while in the matched filter

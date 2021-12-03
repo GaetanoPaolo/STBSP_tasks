@@ -1,5 +1,6 @@
 %% Visualizing dataset
 load('eegdata_artifacts.mat')
+figure
 eegplot_simple(eegdata,fs)
 %% Locating artifacts
 disp(channelnames);
@@ -68,24 +69,42 @@ title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
 %Check the eigenvalues in the Lambda variable in mwf_compute and retain te
 %values that are large enough (compared to the first) => not smalle than
 %0.1*largest eig
-p               = mwf_params(...
-                'rank', 'first', ...
-                'rankopt',4, ...
-                'delay', 0);
-[n_d, d_d, W, SER_d, ARR_d] = mwf_process(eegdata, mask,p);
-figure("Name","Mixed Plot delay 3")
-hold on
-plot(1:30*fs, eegdata(1,1:30*fs))
-plot(1:30*fs, n_d(1,1:30*fs))
-plot(1:30*fs, d_d(1,1:30*fs))
-hold off
-legend("raw","MWF","est_artifacts")
-title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
+SER_arr = zeros(1,47);
+ARR_arr = zeros(1,47);
+for i = 1:47
+    p               = mwf_params(...
+                    'rank', 'first', ...
+                    'rankopt',i, ...
+                    'delay', 0);
+    [n_d, d_d, W, SER_d, ARR_d] = mwf_process(eegdata, mask,p);
+    SER_arr(i) = SER_d;
+    ARR_arr(i) = ARR_d;
+end
+
+% figure("Name","Mixed Plot delay 0")
+% hold on
+% plot(1:30*fs, eegdata(1,1:30*fs))
+% plot(1:30*fs, n_d(1,1:30*fs))
+% plot(1:30*fs, d_d(1,1:30*fs))
+% hold off
+% legend("raw","MWF","est_artifacts")
+% title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
 
 %for eigenvalues with a magnitude above 0.1*margest eigenvalue kept (=4 in
 %total), the ARR decreases (worse artifact supression), but SER increases
 %(less artifacts introduced by filter itself) => optimize trade off/find
 %sweetspot
+ [~,vert_pos] = max(ARR_arr);
+figure
+hold on 
+plot(1:47,SER_arr)
+plot(1:47,ARR_arr)
+xline(vert_pos)
+hold off
+legend('SER','ARR','opt')
+title(strcat("Metirc evolution, opt = ARR: ",num2str(ARR_arr(vert_pos))," SER: ",num2str(SER_arr(vert_pos))))
+ylabel('Magnitude [dB]')
+xlabel('rank/eigenvalue')
 
 %% 1.3.1.6
 %muscle_mask = mwf_getmask(eegdata, fs) ;
@@ -148,15 +167,15 @@ p               = mwf_params(...
 
 figure("Name","Tot mask plot")
 hold on
-plot(1:col, eegdata(1,:))
-plot(1:col, n_d(1,:))
-plot(1:col, d_d(1,:))
+plot(1:col, eegdata(35,:))
+plot(1:col, n_d(35,:))
+plot(1:col, d_d(35,:))
 hold off
-legend("raw","MWF","est_artifacts")
+legend("raw","MWF","est artifacts")
 title(strcat("ARR: ",num2str(ARR_d)," SER: ",num2str(SER_d)))
  
 figure("Name","EEG plot totmask")
-eegplot_simple(d_d,fs)
+eegplot_simple(n_d,fs)
 
 % Muscle artifacts less removed due to their lower autocorrelations => less
 % present in the estimated covariance matrix

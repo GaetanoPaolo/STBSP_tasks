@@ -19,10 +19,10 @@ hold off
 title('Stimulation artifact recodrings superimposed')
 xlabel('Timesamples')
 ylabel('Amplitude')
-legend('chan14','chan4','events','labels')
+legend('chan14','chan4','chan1','events','labels')
 %% Defining filter calculation parameters
 all_chans = 1:32;
-L = 9;
+L = 27;
 jump = 29;
 filt_out = zeros(size(data,1),size(data,2));
 for cur_chan = all_chans
@@ -86,10 +86,11 @@ for cur_chan = all_chans
     filt_out(cur_chan,:) = cur_y;
 end
 %% saving filtered channels
-%save('filtered_channels.mat','filt_out')
-load('filtered_channels.mat')
+save('filtered_channels_L_27.mat','filt_out')
+%load('filtered_channels.mat')
 %% Plotting artifacts and filtered data
-
+load('filtered_channels.mat')
+%load('filtered_channels_L_27.mat')
 t = 108800:109400;
 all_chans = 1:32;
 figure
@@ -102,7 +103,7 @@ legend('chan1','chan2','chan3','chan4','chan4','chan5','chan6','chan7',...
     'chan8','chan9','chan10','chan11','chan12','chan13','chan14','chan15',...
     'chan16','chan17','chan18','chan19','chan20','chan21','chan22','chan23'...
     ,'chan24','chan25','chan26','chan27','chan28','chan29','chan30','chan31','chan32');
-title('Filtered recordings for all channels in sample range: 108800:109400')
+title(strcat('Filtered recordings for all channels in sample range: 108800:109400, L =',int2str(9)))
 ylabel('Amplitude')
 xlabel('Timesamples')
 %% Extra plots
@@ -117,7 +118,7 @@ plot(t,filt_out(4,t))
 plot(cur_labels_idx,amp,'*g')
 hold off
 legend('chan14','chan4','labels')
-title('Filtered recorndings superimposed')
+title(strcat('Filtered recorndings superimposed, L =',int2str(9)))
 ylabel('Amplitude')
 xlabel('Timesamples')
 
