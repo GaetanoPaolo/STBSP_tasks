@@ -21,7 +21,7 @@ vecTemplate = mat2stacked(template);
 
 % TODO: Visualize the calculated template using plotMultiChannel
 % visualize template
-plotMultiChannel(vecTemplate,2)
+plotMultiChannel(template,1)
 %% Template as a filter
 % TODO: complete applyMultiChannelFilter function
 %  make sure to transform the filter coefficients back to a matrix
@@ -37,10 +37,10 @@ outLabels = trainingLabels + floor(spike_window/2);
 
 % try different thresholds on the filter output
 outStd = std(templateFilterOut);
-C = 10;
+C = 5;
 max_perf = 0;
 SNR_senss = [];
-SNR_precs = [];
+SNR_precs = []
 SNR_thrs = [];
 while 1
     % threshold segments
@@ -67,20 +67,25 @@ while 1
     C = C + 1;
 end
 %% PLOT P-R CURVE FOR template filter AND CHOOSE A THRESHOLD
+[~,pos] = max(SNR_precs);
+max_threshold = SNR_thrs(pos);
+% precision it the only non monotonic variable => defines optimal choice
 
 % TODO: plot a P-R curve using SNR_senss and SNR_precs
 figure('Name','P-R plot')
-plot(SNR_senss,SNR_precs)
+plot(SNR_senss(1:end-53),SNR_precs(1:end-53))
 xlabel('Recall/Sensitivity')
 ylabel('Precision')
 
 figure('Name','PR-Treshold plot')
 hold on
-plot(SNR_thrs,SNR_senss)
-plot(SNR_thrs,SNR_precs)
+plot(SNR_thrs(1:end-53),SNR_senss(1:end-53))
+plot(SNR_thrs(1:end-53),SNR_precs(1:end-53))
+plot(SNR_thrs(pos),SNR_precs(pos),"*r")
 hold off
 legend('recall','precision')
 
+<<<<<<< HEAD
 
 % TODO: based on the plotted P-R curve choose a threshold
 % max_threshold =  % <your value here>;
@@ -92,6 +97,8 @@ max_threshold = SNR_thrs(pos);
 disp('Template filter treshold')
 disp(max_threshold)
 % precision it the only non monotonic variable => defines optimal choice
+=======
+>>>>>>> cdbeb39157056988a1056ead011ea27b6c0510fe
 %% VALIDATE template filter ON TESTING DATA
 
 % load the testing data
@@ -146,7 +153,6 @@ noiseCov = regularizeCov(tempNoiseCovariance,1);
 % TODO: calculate the Matched filter filter using noiseCov and the vectorized
 % template, make sure to transform the filter coefficients back to a matrix
 % Store the matched filter in maxSNR
-
 maxSNR = transpose(noiseCov\template');
 
 
@@ -163,7 +169,7 @@ outLabels = trainingLabels + floor(spike_window/2);
 
 % try different thresholds on the filter output
 outStd = std(maxSNROut);
-C = 10;
+C = 1;
 max_perf = 0;
 SNR_senss = [];
 SNR_precs = [];
@@ -195,21 +201,27 @@ end
 
 %% PLOT P-R CURVE FOR Matched filter AND CHOOSE A THRESHOLD
 
+[~,pos] = max(SNR_precs);
+max_threshold = SNR_thrs(pos);
 % TODO: plot a P-R curve using SNR_senss and SNR_precs
 
 figure('Name','P-R plot matched filter')
-plot(SNR_senss,SNR_precs)
+plot(SNR_senss(1:end-53),SNR_precs(1:end-53))
 xlabel('Recall/Sensitivity')
 ylabel('Precision')
 
 figure('Name','PR-Treshold plot matched filter')
 hold on
-plot(SNR_thrs,SNR_senss)
-plot(SNR_thrs,SNR_precs)
+plot(SNR_thrs(1:end-53),SNR_senss(1:end-53))
+plot(SNR_thrs(1:end-53),SNR_precs(1:end-53))
+plot(SNR_thrs(pos),SNR_precs(pos),'*r')
 hold off
 legend('recall','precision')
 
+<<<<<<< HEAD
 % TODO: based on the plotted P-R curve choose a threshold
+=======
+>>>>>>> cdbeb39157056988a1056ead011ea27b6c0510fe
 
 
 F1 = 2*(SNR_senss.*SNR_precs)./(SNR_senss+SNR_precs);
@@ -320,14 +332,22 @@ end
 
 %% PLOT P-R CURVE FOR MAX-SPIR AND CHOOSE A THRESHOLD
 
-% TODO: plot a P-R curve using SPIR_senss and SPIR_precs
+% TODO: based on the plotted P-R curve choose a threshold
+F1 = 2*(SPIR_senss.*SPIR_precs)./(SPIR_senss+SPIR_precs);
+[~,pos] = max(F1);
+max_threshold_SPIR = SPIR_thrs(pos);
 
+% TODO: plot a P-R curve using SPIR_senss and SPIR_precs
 figure('Name','P-R plot max SPIR filter')
+<<<<<<< HEAD
 hold on
 plot(SNR_senss,SNR_precs)
 plot(SPIR_senss,SPIR_precs)
 plot(0.0305,0.0108,'*r')
 hold off
+=======
+plot(SPIR_senss(1:end-39),SPIR_precs(1:end-39))
+>>>>>>> cdbeb39157056988a1056ead011ea27b6c0510fe
 xlabel('Recall/Sensitivity')
 ylabel('Precision')
 legend('Matched filter','max-SPIR filter','chosen treshold')
@@ -335,17 +355,21 @@ title('PR curve for both matched and max-SPIR filters')
 
 figure('Name','PR-Treshold plot max SPIR filter')
 hold on
-plot(SPIR_thrs,SPIR_senss)
-plot(SPIR_thrs,SPIR_precs)
+plot(SPIR_thrs(1:end-39),SPIR_senss(1:end-39))
+plot(SPIR_thrs(1:end-39),SPIR_precs(1:end-39))
+plot(SPIR_thrs(pos),SPIR_precs(pos),'*r')
 hold off
 legend('recall','precision')
 
+<<<<<<< HEAD
 % TODO: based on the plotted P-R curve choose a threshold
 F1 = 2*(SPIR_senss.*SPIR_precs)./(SPIR_senss+SPIR_precs);
 [~,pos] = max(F1);
 max_threshold_SPIR = SPIR_thrs(pos);
 disp('SPIR teshold')
 disp(max_threshold_SPIR)
+=======
+>>>>>>> cdbeb39157056988a1056ead011ea27b6c0510fe
 %% VALIDATE MAX-SPIR FILTER ON TESTING DATA
 
 testingMaxSPIROut = applyMultiChannelFilter(testingData, maxSPIR);
