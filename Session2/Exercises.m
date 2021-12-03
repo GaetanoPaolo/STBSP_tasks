@@ -28,9 +28,16 @@ sa = 2;
 axis([-sa sa -sa sa -sa sa])
 title('tensor mode-1 vectors')
 
-%% 2.
+%% 2.2
 load('ex2data.mat')
 s = (rand([3,500])-0.5)/2;
-n =noisy(zeros(3,500), 5);
+n = noisy(zeros(3,500), 0);
 x = A*s+n;
-[F,delta]=aci(s+n)
+[F,delta] = aci(x);
+corrsources = pinv(F)*x;
+covsource = cov(corrsources');
+[V,D] = eig(covsource);
+[Ds, ind] = sort(diag(D),'descend');
+V = V(:,ind);
+construct = V(:,3)*V(:,3)'*corrsources;
+
