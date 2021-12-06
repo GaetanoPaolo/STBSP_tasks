@@ -35,17 +35,34 @@ legend('raw datapoints (3 first mode 2 rows)','projected data on first 3 PCs','p
 
 %% 2.2
 load('ex2data.mat')
-s = (rand([3,500])-0.5)/2;
-n = noisy(zeros(3,500), 0);
-x = A*s+n;
-[F,delta] = aci(x);
-corrsources = pinv(F)*x;
-covsource = cov(corrsources');
-[V,D] = eig(covsource);
-disp(V)
-[Ds, ind] = sort(diag(D),'descend');
-V = V(:,ind);
-construct = V(:,3)*V(:,3)'*corrsources;
+sirsica = [];
+sirspca = [];
+SNRs = 0:5:50;
+for i=SNRs
+    siricatot=0;
+    sirpcatot=0;
+    for j = 1:100
+        s = (rand([3,500])-0.5)/2;
+        x = A*s;
+        [x,n] = noisy(x,i);
+        [F,delta] = aci(x); 
+        [sirica,P,D] = sir(A,F);
+        siricatot = siricatot + sirica;
+        covsource = cov(x');
+        [V,De] = eig(covsource);
+        aest = V*V';
+        [U,S,V] = svd(x);
+        aest2 = U*U';
+        [sirpca,P,D] = sir(A,aest);
+        sirpcatot = sirpcatot + sirpca;
+    end
+    sirsica = [sirsica siricatot/100];
+    sirspca = [sirspca sirpcatot/100];
+    disp("skeeeeet")
+end
+hold on
+plot(SNRs, sirsica)
+plot(SNRs, sirspca)
 %% 2.3 
 load('ex3data.mat')
 figure(1)
@@ -61,3 +78,12 @@ title('Matrix C')
 % estimate componenents from T(:,:,4)
 cur_slice = T(:,:,4);
 [U_slice,S_slice,V_slice] = svd(cur_slice);
+
+%% 2.4
+load('ex4data.mat')
+
+%LMLRA-based harmonic retrieval
+y = hankelize(x);
+[UYinc,SYinc] = lmlra(y,[2 2]); 
+Ylmlra = lmlragen(UYinc,SYinc);
+
