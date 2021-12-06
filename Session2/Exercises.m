@@ -42,7 +42,22 @@ x = A*s+n;
 corrsources = pinv(F)*x;
 covsource = cov(corrsources');
 [V,D] = eig(covsource);
+disp(V)
 [Ds, ind] = sort(diag(D),'descend');
 V = V(:,ind);
 construct = V(:,3)*V(:,3)'*corrsources;
+%% 2.3 
+load('ex3data.mat')
+figure(1)
+plot3(A(:,1),A(:,2),A(:,3),'rx')
+title('Matrix A')
+figure(2)
+plot3(B(:,1),B(:,2),B(:,3),'rx')
+title('Matrix B')
+figure(3)
+plot3(C(:,1),C(:,2),C(:,3),'rx')
+title('Matrix C')
 
+% estimate componenents from T(:,:,4)
+cur_slice = T(:,:,4);
+[U_slice,S_slice,V_slice] = svd(cur_slice);
