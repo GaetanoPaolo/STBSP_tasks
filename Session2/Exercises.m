@@ -99,7 +99,7 @@ subplot(3,1,3)
 plot(1:rowC,C(:,3))
 title('Component3 matrix C')
 
-% estimate componenents from T(:,:,4)
+% 2.3.1
 cur_slice = T(:,:,4);
 [U_slice,S_slice,V_slice] = svd(cur_slice);
 projB = (U_slice(:,1:3)'*cur_slice)';
@@ -107,13 +107,13 @@ projA = cur_slice*V_slice(:,1:3);
 figure(4)
 subplot(3,1,1)
 plot(1:rowA,projA(:,1))
-title('Component1 matrix A')
+title('Component1 matrix A PCA')
 subplot(3,1,2)
 plot(1:rowA,projA(:,2))
-title('Component2 matrix A')
+title('Component2 matrix A PCA')
 subplot(3,1,3)
 plot(1:rowA,projA(:,3))
-title('Component3 matrix A')
+title('Component3 matrix A PCA')
 figure(5)
 subplot(3,1,1)
 plot(1:rowB,projB(:,1))
@@ -124,6 +124,14 @@ title('Component2 Matrix B PCA')
 subplot(3,1,3)
 plot(1:rowB,projB(:,3))
 title('Component3 Matrix B PCA')
+% 2.3.2
+T_noise = noisy(T,15);
+[U_noise, S_noise, sv_noise] = mlsvd(T_noise);
+options.Compression = @mlsvd;
+options.Initialization = @cpd_gevd;
+options.Algorithm = @cpd_als;
+options.Refinement = @cpd_als;
+[U,output] = cpd(T_noise,4,options);
 %% 2.4
 load('ex4data.mat')
 
