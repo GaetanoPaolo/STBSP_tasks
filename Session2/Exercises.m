@@ -49,11 +49,12 @@ for i=SNRs
         [sirica,P,D] = sir(A,F);
         siricatot = siricatot + sirica;
         covsource = cov(x');
-        [V,De] = eig(covsource);
-        aest = V*V';
+        Q = eye(3);
+        [W,D] = eig(x*x',Q);
+        %projB = (U_slice(:,1:3)'*cur_slice)';
         [U,S,V] = svd(x);
-        aest2 = U*U';
-        [sirpca,P,D] = sir(A,aest);
+        aest2 = U'*U;
+        [sirpca,P,D] = sir(A,W');
         sirpcatot = sirpcatot + sirpca;
     end
     sirsica = [sirsica siricatot/100];
