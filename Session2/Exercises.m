@@ -50,7 +50,8 @@ for i=SNRs
         siricatot = siricatot + sirica;
         covsource = cov(x');
         Q = eye(3);
-        [W,D] = eig(x*x',Q);
+        %[W,D] = eig(x*x',Q);
+        [W,D] = eig(covsource,Q);
         %projB = (U_slice(:,1:3)'*cur_slice)';
         [U,S,V] = svd(x);
         aest2 = U'*U;
@@ -59,11 +60,24 @@ for i=SNRs
     end
     sirsica = [sirsica siricatot/100];
     sirspca = [sirspca sirpcatot/100];
-    disp("skeeeeet")
 end
+figure
 hold on
 plot(SNRs, sirsica)
 plot(SNRs, sirspca)
+hold off
+title('SIRS')
+legend('SIR from ICA','SIR from PCA')
+%The added noise using noisy-function is Gaussian
+% The SIR curves show that there is a much better source separation using
+% ICA than PCA. The pure source separation in PCA is so bad that , in the low
+% SNR case, the high Gaussian noise power makes this interference a bit less worse (maybe due to the lower difference in signal between channels?).
+% For higher SNR values, the SIR of PCA remains constant: Covariance not
+% affected anymore by Gaussian noise?
+% The opposite is true for the ICA: From page 76 in HB: The estimated
+% mixing matrix F comes from a CPD: estimationbased on non-Gaussian  part
+% of the data. This non_Gaussian part increases as the SNR gets higher =>
+% better estimate of the mixture matrix.
 %% 2.3 
 load('ex3data.mat')
 [rowA,~] = size(A);
@@ -125,14 +139,63 @@ title('Component2 Matrix B PCA')
 subplot(3,1,3)
 plot(1:rowB,projB(:,3))
 title('Component3 Matrix B PCA')
+%Comments: Permutation of the components, demixed components still scaled,
+%PCA = projection on components having largest variances/ on othogonal
+%vectors spanning the space of the data => no exact demixing, as mixing not
+%necessarily independent
 % 2.3.2
 T_noise = noisy(T,15);
 [U_noise, S_noise, sv_noise] = mlsvd(T_noise);
+% projecting the same slice in 1 on the mlsvd components
+projB_ml = (U_noise{1}(:,1:3)'*cur_slice)';
+projA_ml = cur_slice*U_noise{2}(:,1:3);
+figure(6)
+subplot(3,1,1)
+plot(1:rowA,projA_ml(:,1))
+title('Component1 matrix A MLPCA')
+subplot(3,1,2)
+plot(1:rowA,projA_ml(:,2))
+title('Component2 matrix A MLPCA')
+subplot(3,1,3)
+plot(1:rowA,projA_ml(:,3))
+title('Component3 matrix A MLPCA')
+figure(7)
+subplot(3,1,1)
+plot(1:rowB,projB_ml(:,1))
+title('Component1 Matrix B MLPCA')
+subplot(3,1,2)
+plot(1:rowB,projB_ml(:,2))
+title('Component2 Matrix B MLPCA')
+subplot(3,1,3)
+plot(1:rowB,projB_ml(:,3))
+title('Component3 Matrix B MLPCA')
 options.Compression = @mlsvd;
 options.Initialization = @cpd_gevd;
 options.Algorithm = @cpd_als;
 options.Refinement = @cpd_als;
-[U,output] = cpd(T_noise,4,options);
+rankest(T_noise);
+R = 4; % setting the amount of rank 1 terms
+[U,output] = cpd(T_noise,R,options);
+figure
+for r = 1:R
+    subplot(R,1,r)
+    plot(1:rowA,U{1}(:,r));
+    title(strcat('Component',int2str(r),' A CPD'))
+end
+figure
+for r = 1:R
+    subplot(R,1,r)
+    plot(1:rowB,U{2}(:,r));
+    title(strcat('Component',int2str(r),' B CPD'))
+end
+figure
+for r = 1:R
+    subplot(R,1,r)
+    plot(1:rowC,U{3}(:,r));
+    title(strcat('Component',int2str(r),' C CPD'))
+end
+    
+
 %% 2.4
 load('ex4data.mat')
 
