@@ -21,7 +21,7 @@ hold off
 sa = 2;
 axis([-sa sa -sa sa -sa sa])
 title('tensor mode-1 vectors')
-legend('raw datapoints (3 first mode 1 rows)','projected data on first 3 PCss')
+legend('raw datapoints (3 first mode 1 rows)','projected data on first 3 PCs')
 figure(2)
 hold on
 plot3(T2(1,:),T2(2,:),T2(3,:),'x'), grid 
@@ -37,11 +37,11 @@ legend('raw datapoints (3 first mode 2 rows)','projected data on first 3 PCs','p
 load('ex2data.mat')
 sirsica = [];
 sirspca = [];
-SNRs = 0:5:50;
+SNRs = -50:5:50;
 for i=SNRs
     siricatot=0;
     sirpcatot=0;
-    for j = 1:100
+    for j = 1:1000
         s = (rand([3,500])-0.5)/2;
         x = A*s;
         [x,n] = noisy(x,i);
@@ -58,8 +58,8 @@ for i=SNRs
         [sirpca,P,D] = sir(A,W');
         sirpcatot = sirpcatot + sirpca;
     end
-    sirsica = [sirsica siricatot/100];
-    sirspca = [sirspca sirpcatot/100];
+    sirsica = [sirsica siricatot/1000];
+    sirspca = [sirspca sirpcatot/1000];
 end
 figure
 hold on
@@ -302,7 +302,10 @@ title('Convergence plot'); legend('cpd\_nls','cpd\_als')
 load('ex4data.mat')
 
 %LMLRA-based harmonic retrieval
-y = hankelize(x);
-[UYinc,SYinc] = lmlra(y,[2 2]); 
-Ylmlra = lmlragen(UYinc,SYinc);
+y = hankelize(x,'order',3);
+options.Initialization = @mlsvd;
+[UYinc,SYinc] = lmlra(y,[3 3 3],options); 
+
+%% 2.5
+
 
