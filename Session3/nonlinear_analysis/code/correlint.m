@@ -31,44 +31,44 @@
 % along with TACTS.  If not, see <http://www.gnu.org/licenses/>.
 % -------------------------------------------------------------------------
 
-function [C,e]=correlint(X,emin,emax)
-
-L=length(X);
-
-% e=logspace(emin,emax,500);
-e=logspace(emin,emax,20);
-
-K=length(e);
-
-C=zeros(1,length(e));
-
-k=1;
-
-% w=waitbar(0);
-
-while k<K+1
-
-disp(['k --> ',num2str(k)])    
-    
-for i=1:L
-%     disp(['i --> ',num2str(i)])
-    Y=sqrt(sum(bsxfun(@minus,X,X(:,i)).^2));
-    ind=find(Y<e(k));
-    C(k)=C(k)+length(ind);
-end
-
-C(k)=(C(k)-L)/(L*(L-1));
-
-% waitbar(k/(K+1))
-
-k=k+1;
-
-end
-
-% close(w);
-
-end
-=======
+% function [C,e]=correlint(X,emin,emax)
+% 
+% L=length(X);
+% 
+% % e=logspace(emin,emax,500);
+% e=logspace(emin,emax,20);
+% 
+% K=length(e);
+% 
+% C=zeros(1,length(e));
+% 
+% k=1;
+% 
+% % w=waitbar(0);
+% 
+% while k<K+1
+% 
+% disp(['k --> ',num2str(k)])    
+%     
+% for i=1:L
+% %     disp(['i --> ',num2str(i)])
+%     Y=sqrt(sum(bsxfun(@minus,X,X(:,i)).^2));
+%     ind=find(Y<e(k));
+%     C(k)=C(k)+length(ind);
+% end
+% 
+% C(k)=(C(k)-L)/(L*(L-1));
+% 
+% % waitbar(k/(K+1))
+% 
+% k=k+1;
+% 
+% end
+% 
+% % close(w);
+% 
+% end
+% =======
 % -------------------------------------------------------------------------
 % Correlation integral
 % -------------------------------------------------------------------------
